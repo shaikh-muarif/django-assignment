@@ -1,0 +1,19 @@
+Q. By default are django signals executed synchronoulsly or asynchronously?
+Ans:
+By default django signals are executed synchronously. This means that the signal handler will be executed immediately in the same thread as the process that triggered the signal.
+
+
+To demonstrate this, we can use a Django signal (e.g., post_save) and introduce a delay in the signal handler to confirm that it blocks the main process.
+Steps:
+Create a signal handler that simulates a delay using Python’s time.sleep.
+Save a model instance and check whether the signal handler blocks the execution.
+
+
+when you run this project and go to the url "person/", you can see the following output in the terminal:
+Saving model instance...
+Signal received!
+<5 second delay here>
+Signal handler finished after 5 seconds.
+Model instance saved!
+
+If the signals were asynchronous by default, you would expect the "Model instance saved!" message to appear immediately, without waiting for the signal handler to complete. However, since the signal handler blocks for 5 seconds, it proves that Django signals are executed synchronously by default.

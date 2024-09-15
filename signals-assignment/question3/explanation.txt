@@ -1,0 +1,20 @@
+Q. By default do django signals run in the same database transaction as the caller?
+Ans:
+Yes. Django signals run in the same database transaction as the caller by default, assuming the caller is within an atomic transaction. This means if the transaction fails, any changes made in the signal handler will be rolled back along with the caller's changes.
+
+We can demonstrate this by using the post_save signal and intentionally causing a database error in the signal handler. If both the model save operation and the signal handler run in the same transaction, the entire transaction should be rolled back.
+
+Steps:
+Create a post_save signal that raises an exception after the model is saved.
+Wrap the save operation in an atomic transaction to ensure both the caller and the signal handler run in the same transaction.
+
+when you run this project and go to url "person/", you can see the following output in the terminal:
+saving model instance...
+Signal received!
+Transaction rolled back due to error: Error in signal handler!
+
+# Try to fetch the instance in the shell
+from testapp.models import Person
+print(Person.objects.filter(name="muarif").exists())  # This should print False
+
+If it prints False, this conclusively proves that both the caller and the signal handler run in the same database transaction by default, and any errors in the signal handler will cause the transaction to be rolled back.
